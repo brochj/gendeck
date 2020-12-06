@@ -15,32 +15,48 @@ deck_id = random.randrange(1 << 30, 1 << 31)
 
 my_model = genanki.Model(
   1962161376,
-  'Simple Model',
+  'Cloze wordlist',
   fields=[
-    {'name': 'Question'},
-    {'name': 'Answer'},
+    {'name': 'Word'},
+    # {'name': 'Example'},
+    # {'name': 'Definition'},
+    {'name': 'id'},
+    # {'name': 'IPA'},
+    # {'name': 'Image'},
+    # {'name': 'Audio_word'},
+    # {'name': 'Google_images'},
+    # {'name': 'Dict_link'},
+    # {'name': 'Tags'}
   ],
   templates=[
     {
-      'name': 'Card 1',
-      'qfmt': '{{Question}}',
-      'afmt': '{{FrontSide}}<hr id="answer">{{Answer}}',
+      'name': 'Card',
+      'qfmt': '{{cloze::Word}}',
+      'afmt': '{{cloze::Word}}<hr id="answer">{{cloze::Word}}{{id}}',
     },
-  ])
+  ],
+  css=".card {font-family: arial; font-size: 20px;text-align: center; color: black;  background-color: white;}.cloze { font-weight: bold;color: blue;}",
+   # model_type= 0 #CLOZE=1
+  )
 
 
 words = [
-    {'word': "water", "definition": "liquid"},
-    {'word': "fire", "definition": "hot"},
+    {'word': "water", "definition": "liquid", 'tags': ['tag1', 'tag2']},
+    {'word': "fire", "definition": "hot", 'tags': ['tag1', 'tag2']},
     ]
 
-my_deck = genanki.Deck(
-        2106080373,
-      'Longman')
+my_deck = genanki.Deck(2106080373, 'Longman')
 
 for word in words:
     
-    my_note = genanki.Note(model=my_model, fields=[word['word'], word['definition']])    
+    my_note = genanki.Note(model=my_model, 
+                           fields=[
+                               "{{c1::" + word['word'] +"}}", 
+                               word['definition'],
+                               
+                               ],
+                           tags=word['tags']
+                           )    
     
     my_deck.add_note(my_note)
 

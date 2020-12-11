@@ -9,20 +9,19 @@ from bs4 import BeautifulSoup
 import requests
 import time
 
-words = ['umbrella'] 
+WORDS = ['umbrella'] 
 
 
-url=f"https://www.oxfordlearnersdictionaries.com/us/definition/english/{words[0]}"
+URL=f"https://www.oxfordlearnersdictionaries.com/us/definition/english/{WORDS[0]}"
 
-# url=f"https://www.google.com/search?q={words[0]}"
+# URL=f"https://www.google.com/search?q={WORDS[0]}"
 
 # Make a GET request to fetch the raw HTML content
-html_content = requests.get(url,headers={"User-Agent":"Mozilla/5.0"}).text
+html_content = requests.get(URL,headers={"User-Agent":"Mozilla/5.0"}).text
 
 # Parse the html content
 soup = BeautifulSoup(html_content, 'html.parser')
 
-print(soup.find_all("span", class_="def"))
 
 def get_definitions(_soup):
     
@@ -42,38 +41,32 @@ def get_examples(_soup):
         example_list = [ex.text for ex in example_ul.find_all('li')]
         examples.append(example_list)
     return examples
-    
-    
-    
-    
+      
 
 def get_ipa(_soup, phon="nam"):
-    """
-    Parameters
-    ----------
-    _soup : TYPE
-        DESCRIPTION.
-    phon : STR
-        "nam" = North american
-        "br" = British
-
-    Returns
-    -------
-    ipa : STR
-        DESCRIPTION.
-
-    """
     ipa_nam = _soup.find("div", class_="phons_n_am").text
     ipa_br = _soup.find("div", class_="phons_br").text
     
     return ipa_nam if phon=="nam" else ipa_br
 
-definitions = get_definitions(soup)
+def get_word_type(_soup):
+    return _soup.find("span", class_="pos").text
 
-examples = get_examples(soup)
 
-nam = get_ipa(soup)
-br = get_ipa(soup, 'br')
+def get_word_level(_soup):
+    level_html = _soup.find("div", class_="symbols")
+    link = level_html.contents[0].get('href')
+    level = link[-2:]
+    return level
+
+
+# definitions = get_definitions(soup)
+# examples = get_examples(soup)
+# nam = get_ipa(soup)
+# br = get_ipa(soup, 'br')
+# word_type = get_word_type(soup)
+
+word_level = get_word_level(soup)
 
 
 

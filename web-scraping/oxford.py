@@ -10,10 +10,10 @@ import requests
 
 
 class Oxford:
-    def __init__(self, word):
-        self.word = word
+    def __init__(self):
+        self.word = ''
         self.soup = None
-        self.get_html()
+        
 
         self.definitions = []
         self.examples = []
@@ -22,12 +22,7 @@ class Oxford:
         self.word_type = ""
         self.word_level = ""
 
-        self.get_definitions()
-        self.get_examples()
-        self.get_ipa()
-        self.get_ipa("br")
-        self.get_word_type()
-        self.get_word_level()
+        
 
     def get_html(self):
         URL = f"https://www.oxfordlearnersdictionaries.com/us/definition/english/{self.word}"
@@ -36,8 +31,36 @@ class Oxford:
 
         # Parse the html content
         self.soup = BeautifulSoup(html_content, "html.parser")
+        
+    def search(self, word):
+        self.word = word
+        
+        self.definitions = []
+        self.examples = []
+        self.ipa_nam = ""
+        self.ipa_br = ""
+        self.word_type = ""
+        self.word_level = ""
+        
+        self.get_html()
+        
+        self.get_definitions()
+        self.get_examples()
+        self.get_ipa()
+        self.get_ipa("br")
+        self.get_word_type()
+        self.get_word_level()
 
     def get_definitions(self):
+        try:
+            definitions_html = self.soup.find("ol", class_="sense_single")
+            definitions_li = definitions_html.find_all("span", class_="def")
+
+            for definition in definitions_li:
+                self.definitions.append(definition.text)
+        except:
+            print("Can't find single definition")
+        
         try:
             definitions_html = self.soup.find("ol", class_="senses_multiple")
             definitions_li = definitions_html.find_all("span", class_="def")
@@ -45,17 +68,45 @@ class Oxford:
             for definition in definitions_li:
                 self.definitions.append(definition.text)
         except:
-            print("Can't find definitions")
+            print("Can't find multiple definitions")
 
     def clear_extra_examples(self):
         try:
-            self.soup.find(
-                "span", unbox="extra_examples"
-            ).clear()  # extra_examples_removed
+            extra_examples = self.soup.find_all("span", unbox="extra_examples")
+            
+            for extra_eg in extra_examples:
+                extra_eg.clear()
         except:
-            print("Doesn't exist 'extra examples or Can't clear 'extra examples'")
+            print("Doesn't exist 'extra examples' or Can't clear 'extra examples'")
+        
+        try:
+            self.soup.find(
+                "span", unbox="more_about"
+            ).clear()  # more_about removed
+        except:
+            print("Doesn't exist 'more_about' or Can't clear 'more_about'")
+        
+        try:
+            self.soup.find(
+                "span", unbox="cult"
+            ).clear()  # more_about removed
+        except:
+            print("Doesn't exist 'culture' or Can't clear 'culture'")
 
     def get_examples(self):
+        try:
+            self.clear_extra_examples()
+            definitions_html = self.soup.find("ol", class_="sense_single")
+            examples_html = definitions_html.find_all(
+                "ul", class_="examples", hclass="examples"
+            )
+
+            for example_ul in examples_html:
+                example_list = [ex.text for ex in example_ul.find_all("li")]
+                self.examples.append(example_list)
+        except:
+            print("Can't find examples (single definition)")
+        
         try:
             self.clear_extra_examples()
             definitions_html = self.soup.find("ol", class_="senses_multiple")
@@ -67,7 +118,7 @@ class Oxford:
                 example_list = [ex.text for ex in example_ul.find_all("li")]
                 self.examples.append(example_list)
         except:
-            print("Can't find examples")
+            print("Can't find examples (multiple definitions)")
 
     def get_extra_examples():
         return
@@ -104,7 +155,9 @@ class Oxford:
 
 
 if __name__ == "__main__":
-    teste = Oxford("name")
+    teste = Oxford()
+    
+    teste.search('umbrella')
 
     definitions = teste.definitions
     examples = teste.examples

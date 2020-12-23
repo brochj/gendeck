@@ -43,10 +43,12 @@ oxford = Oxford()
 words_tests = ['umbrella', 'round', 'drink', 'computer', 'water']
 
 
-for word in words[:200]:
+for word in words[200:500]:
     print(f'-----{word}---------')
 
     oxford.search(word)
+    
+    
     
     
     try:
@@ -64,7 +66,7 @@ for word in words[:200]:
         continue
     
     
-    file =  open('words_200.txt', 'a', newline='', encoding='utf-8')
+    file =  open('words_200_500.txt', 'a', newline='', encoding='utf-8')
     fieldnames = ['word', 'definitions', 'examples', 'nam', 'br', 'word_type', 'word_level']
     writer = csv.DictWriter(file, fieldnames=fieldnames, delimiter='|')
     writer.writerow(word_dict)   

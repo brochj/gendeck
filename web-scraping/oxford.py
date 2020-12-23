@@ -11,9 +11,8 @@ import requests
 
 class Oxford:
     def __init__(self):
-        self.word = ''
+        self.word = ""
         self.soup = None
-        
 
         self.definitions = []
         self.examples = []
@@ -21,8 +20,8 @@ class Oxford:
         self.ipa_br = ""
         self.word_type = ""
         self.word_level = ""
-
         
+        self.definitions_li = []
 
     def get_html(self):
         URL = f"https://www.oxfordlearnersdictionaries.com/us/definition/english/{self.word}"
@@ -31,97 +30,111 @@ class Oxford:
 
         # Parse the html content
         self.soup = BeautifulSoup(html_content, "html.parser")
-        
+
     def search(self, word):
         self.word = word
-        
+
         self.definitions = []
         self.examples = []
+        self.extra_examples = []
+        self.synonyms = []
         self.ipa_nam = ""
         self.ipa_br = ""
         self.word_type = ""
         self.word_level = ""
-        
+
         self.get_html()
         
+        self.get_definitions_li()
         self.get_definitions()
+        self.get_extra_examples()
         self.get_examples()
         self.get_ipa()
         self.get_ipa("br")
         self.get_word_type()
         self.get_word_level()
+        self.get_synonyms()
+        
+    
+    def get_definitions_li(self):
+        try:
+            definitions_html = self.soup.find("ol", class_="sense_single")
+            self.definitions_li = definitions_html.find_all("li", class_="sense")
+        except:
+            print("Can't find single definition")
+            
+        try:
+            definitions_html = self.soup.find("ol", class_="senses_multiple")
+            self.definitions_li = definitions_html.find_all("li", class_="sense")
+        except:
+            print("Can't find multiple definitions")
+        
+        
+        pass
 
     def get_definitions(self):
         try:
-            definitions_html = self.soup.find("ol", class_="sense_single")
-            definitions_li = definitions_html.find_all("span", class_="def")
-
-            for definition in definitions_li:
-                self.definitions.append(definition.text)
+            for definition in self.definitions_li:
+                def_text = definition.find('span', class_='def').text
+                self.definitions.append(def_text)
         except:
-            print("Can't find single definition")
-        
+            print("Can't find definition")
+
+            
+
+    def get_definition_variants(self):
         try:
-            definitions_html = self.soup.find("ol", class_="senses_multiple")
-            definitions_li = definitions_html.find_all("span", class_="def")
-
-            for definition in definitions_li:
-                self.definitions.append(definition.text)
+            for definition in self.definitions_li:
+                variants_text = definition.find("div", class_="variants").text
+                return variants_text
         except:
-            print("Can't find multiple definitions")
+            print("Can't find definition variants")
+    
+    def get_use(self):
+        pass
+            
 
     def clear_extra_examples(self):
         try:
             extra_examples = self.soup.find_all("span", unbox="extra_examples")
-            
+
             for extra_eg in extra_examples:
                 extra_eg.clear()
         except:
             print("Doesn't exist 'extra examples' or Can't clear 'extra examples'")
-        
         try:
-            self.soup.find(
-                "span", unbox="more_about"
-            ).clear()  # more_about removed
+            self.soup.find("span", unbox="more_about").clear()  # more_about removed
         except:
             print("Doesn't exist 'more_about' or Can't clear 'more_about'")
-        
         try:
-            self.soup.find(
-                "span", unbox="cult"
-            ).clear()  # more_about removed
+            self.soup.find("span", unbox="cult").clear()  # more_about removed
         except:
             print("Doesn't exist 'culture' or Can't clear 'culture'")
+            
 
-    def get_examples(self):
-        try:
-            self.clear_extra_examples()
-            definitions_html = self.soup.find("ol", class_="sense_single")
-            examples_html = definitions_html.find_all(
-                "ul", class_="examples", hclass="examples"
-            )
-
-            for example_ul in examples_html:
-                example_list = [ex.text for ex in example_ul.find_all("li")]
-                self.examples.append(example_list)
-        except:
-            print("Can't find examples (single definition)")
+    def get_examples(self):  
+        for definition in self.definitions_li:
+            try:
+                examples_ul = definition.find("ul", class_="examples", hclass="examples")
+                example_list = [ex.text for ex in examples_ul.find_all("li")]
+                self.examples.append(example_list)        
+            except:
+                print('There is no examples for this definition')
+                self.examples.append([])
         
-        try:
-            self.clear_extra_examples()
-            definitions_html = self.soup.find("ol", class_="senses_multiple")
-            examples_html = definitions_html.find_all(
-                "ul", class_="examples", hclass="examples"
-            )
-
-            for example_ul in examples_html:
-                example_list = [ex.text for ex in example_ul.find_all("li")]
-                self.examples.append(example_list)
-        except:
-            print("Can't find examples (multiple definitions)")
-
-    def get_extra_examples():
-        return
+            
+    def get_extra_examples(self):
+        for definition in self.definitions_li:
+            try:
+                extra_examples = definition.find("span", unbox="extra_examples")
+                example_list = [ex.text for ex in extra_examples.find_all("li")]
+                self.extra_examples.append(example_list)
+            except:
+                print('There is no "Extra Examples" for this definition')
+                self.extra_examples.append([])
+        
+        self.clear_extra_examples()
+         
 
     def get_ipa(self, phon="nam"):
         try:
@@ -129,12 +142,14 @@ class Oxford:
             self.ipa_br = self.soup.find("div", class_="phons_br").text.strip()
         except:
             print("Can't find ipa")
+            
 
     def get_word_type(self):
         try:
             self.word_type = self.soup.find("span", class_="pos").text
         except:
             print("Can't find word type")
+            
 
     def get_word_level(self):
         try:
@@ -143,6 +158,17 @@ class Oxford:
             self.word_level = link[-2:]
         except:
             print("Can't find word level")
+    
+    def get_synonyms(self):
+        for definition in self.definitions_li:
+            try:
+                print(f'\n Definicao {definition}\n')
+                synonyms = definition.find("span", xt="nsyn")
+                synonym_list = [ex.text for ex in synonyms.find_all("a")]
+                self.synonyms.append(synonym_list)        
+            except:
+                print('There are no synonyms for this definition')
+                self.synonyms.append([])
 
     def get_idioms(self):
         # TODO
@@ -150,18 +176,33 @@ class Oxford:
         print(idioms_html)
         print(len(idioms_html))
         # examples_html = idioms_html.find_all("ol", class_="examples", hclass="examples")
-
         return idioms_html
-
+        
 
 if __name__ == "__main__":
     teste = Oxford()
-    
-    teste.search('umbrella')
 
+    # teste.search("umbrella")
+    teste.search("deliberately")
+    # synonym - palavra deliberately 
+    
+    
     definitions = teste.definitions
     examples = teste.examples
-    nam = teste.ipa_nam
-    br = teste.ipa_br
-    word_type = teste.word_type
-    word_level = teste.word_level
+    # nam = teste.ipa_nam
+    # br = teste.ipa_br
+    # word_type = teste.word_type
+    # word_level = teste.word_level
+    extra_examples = teste.extra_examples
+    synonyms = teste.synonyms
+
+
+# 'definitions': {
+#             1: {'definition': '',
+#                 'synonym': '',
+#                 'variants': '',
+#                 'use': '',
+#                 'examples': [],
+#                 'extra_examples': []
+                
+#                 }

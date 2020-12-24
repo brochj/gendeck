@@ -38,43 +38,34 @@ words_error = []
 
 oxford = Oxford()
 
-# oxford.search('umbrella')
-
-words_tests = ['umbrella', 'round', 'drink', 'computer', 'water']
+# words_tests = ['umbrella',  'dsfsdfds']
 
 
-for word in words[200:500]:
-    print(f'-----{word}---------')
+for word in words[:200]:
+# for word in words_tests:    
+    print(f'\n-----{word}---------')
 
-    oxford.search(word)
-    
-    
-    
-    
     try:
-        word_dict = {
-            'word': word,
-            'definitions' : oxford.definitions[0],
-            'examples' : oxford.examples[0][0],
-            'nam' : oxford.ipa_nam,
-            'br' : oxford.ipa_br,
-            'word_type' : oxford.word_type,
-            'word_level' : oxford.word_level
-        }
+        oxford.search(word)
+        word_dict = oxford.formatted_data
     except:
-        words_error.append(word)
+        words_error.append(word)      
+        file =  open('words_error.txt', 'a', newline='', encoding='utf-8')
+        writer = csv.writer(file)
+        writer.writerow([word])
+        file.close
         continue
     
     
-    file =  open('words_200_500.txt', 'a', newline='', encoding='utf-8')
-    fieldnames = ['word', 'definitions', 'examples', 'nam', 'br', 'word_type', 'word_level']
+    file =  open('words_100.txt', 'a', newline='', encoding='utf-8')
+    fieldnames = ['word', 'definitions', 'ipa_nam', 'ipa_br', 'word_type', 'word_level']
     writer = csv.DictWriter(file, fieldnames=fieldnames, delimiter='|')
-    writer.writerow(word_dict)   
-    
+    writer.writerow(word_dict) 
     file.close
     
-    time.sleep(8)
-    print('--------------')
+    print('\n--------------\n')
+    time.sleep(10)
+    
 
 
 

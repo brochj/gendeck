@@ -37,15 +37,7 @@ class Oxford:
     def search(self, word):
         self.word = word
 
-        self.definitions = []
-        self.examples = []
-        self.extra_examples = []
-        self.synonyms = []
-        self.ipa_nam = ""
-        self.ipa_br = ""
-        self.word_type = ""
-        self.word_level = ""
-        self.formatted_data = {}
+        self.clear_attributes()
 
         self.get_html()
 
@@ -60,17 +52,23 @@ class Oxford:
         self.get_synonyms()
         self.format_data()
 
-    def get_definitions_li(self):
+    def get_definitions_li(self):        
         try:
+            isThereDefinition = True
             definitions_html = self.soup.find("ol", class_="sense_single")
             self.definitions_li = definitions_html.find_all("li", class_="sense")
         except:
+            isThereDefinition = False
             print("Can't find single definition")
         try:
+            isThereDefinition = True
             definitions_html = self.soup.find("ol", class_="senses_multiple")
             self.definitions_li = definitions_html.find_all("li", class_="sense")
         except:
+            isThereDefinition = False
             print("Can't find multiple definitions")
+            
+        if not isThereDefinition : raise Exception(f"Can't find the '{self.word}' definition")
 
     def get_definitions(self):
         try:
@@ -175,6 +173,18 @@ class Oxford:
         print(len(idioms_html))
         # examples_html = idioms_html.find_all("ol", class_="examples", hclass="examples")
         return idioms_html
+    
+    def clear_attributes(self):
+        self.definitions = []
+        self.examples = []
+        self.extra_examples = []
+        self.synonyms = []
+        self.ipa_nam = ""
+        self.ipa_br = ""
+        self.word_type = ""
+        self.word_level = ""
+        self.formatted_data = {}  
+        self.definitions_li = []
 
     def format_data(self):
 
@@ -195,14 +205,14 @@ class Oxford:
             "definitions": definitions_dict,
         }
 
-        pass
+        
 
 
 if __name__ == "__main__":
     teste = Oxford()
 
     # teste.search("umbrella")
-    teste.search("fair")
+    teste.search("umbrella")
     # synonym - palavra deliberately
 
     definitions = teste.definitions
@@ -215,17 +225,6 @@ if __name__ == "__main__":
     synonyms = teste.synonyms
     formatted_data = teste.formatted_data
     
-# 'definitions': {
-#             1: {'definition': '',
-#                 'synonym': '',
-#                 'variants': '',
-#                 'use': '',
-#                 'examples': [],
-#                 'extra_examples': []
-
-#                 }
-
-
 # import itertools
 # defs = ['def 1', 'def 2', 'def 3']
 # var = ['var 1', 'var 2']

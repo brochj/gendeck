@@ -22,11 +22,19 @@ class Oxford:
         self.ipa_br = ""
         self.word_type = ""
         self.word_level = ""
+        self.labels = []
+        self.grammar = []
         self.formatted_data = {}
 
         self.definitions_li = []
 
     def get_html(self):
+        """
+         Oxford Word Endpoints
+        _1 , _2, 1_1, 1_2, 1_3, 1_4, 2_1
+        Examples: word_1, word1_1
+
+        """
         URL = f"https://www.oxfordlearnersdictionaries.com/us/definition/english/{self.word}"
         # Make a GET request to fetch the raw HTML content
         html_content = requests.get(URL, headers={"User-Agent": "Mozilla/5.0"}).text
@@ -50,25 +58,30 @@ class Oxford:
         self.get_word_type()
         self.get_word_level()
         self.get_synonyms()
+        self.get_labels()
+        self.get_grammar()
         self.format_data()
 
-    def get_definitions_li(self):        
+
+    def get_definitions_li(self):
         try:
             isThereDefinition = True
             definitions_html = self.soup.find("ol", class_="sense_single")
+            #Checking if it is Idioms Definitions, which we don't want
+            if definitions_html.parent.name == 'span': definitions_html = None 
             self.definitions_li = definitions_html.find_all("li", class_="sense")
-        except:
-            isThereDefinition = False
+        except AttributeError:
             print("Can't find single definition")
-        try:
-            isThereDefinition = True
-            definitions_html = self.soup.find("ol", class_="senses_multiple")
-            self.definitions_li = definitions_html.find_all("li", class_="sense")
-        except:
-            isThereDefinition = False
-            print("Can't find multiple definitions")
+            try:
+                isThereDefinition = True
+                definitions_html = self.soup.find("ol", class_="senses_multiple")
+                self.definitions_li = definitions_html.find_all("li", class_="sense")
+            except:
+                isThereDefinition = False
+                print("Can't find multiple definitions")
             
         if not isThereDefinition : raise Exception(f"Can't find the '{self.word}' definition")
+
 
     def get_definitions(self):
         try:
@@ -78,18 +91,36 @@ class Oxford:
         except:
             print("Can't find definition")
 
+
     def get_definition_variants(self):
-        # TODO
-        try:
-            for definition in self.definitions_li:
+        for definition in self.definitions_li:
+            try:
                 variants_text = definition.find("div", class_="variants").text
                 return variants_text
-        except:
-            print("Can't find definition variants")
+            except:
+                print("Can't find definition variants")
+                
 
-    def get_use(self):
-        # TODO
-        pass
+
+    def get_labels(self):
+        for definition in self.definitions_li:
+            try:
+                labels = definition.find("span", class_="labels").text
+                self.labels.append(labels)
+            except:
+                print("Can't find definition labels")
+                self.labels.append([])
+    
+    
+    def get_grammar(self):
+            for definition in self.definitions_li:
+                try:
+                    grammar = definition.find("span", class_="grammar").text
+                    self.grammar.append(grammar)
+                except:
+                    print("Can't find definition grammar")
+                    self.grammar.append([])
+
 
     def clear_extra_examples(self):
         try:
@@ -108,6 +139,7 @@ class Oxford:
         except:
             print("Doesn't exist 'culture' or Can't clear 'culture'")
 
+
     def get_examples(self):
         for definition in self.definitions_li:
             try:
@@ -120,6 +152,7 @@ class Oxford:
                 print("There is no examples for this definition")
                 self.examples.append([])
 
+
     def get_extra_examples(self):
         for definition in self.definitions_li:
             try:
@@ -131,6 +164,7 @@ class Oxford:
                 self.extra_examples.append([])
         self.clear_extra_examples()
 
+
     def get_ipa(self, phon="nam"):
         try:
             self.ipa_nam = self.soup.find("div", class_="phons_n_am").text.strip()
@@ -138,11 +172,13 @@ class Oxford:
         except:
             print("Can't find ipa")
 
+
     def get_word_type(self):
         try:
             self.word_type = self.soup.find("span", class_="pos").text
         except:
             print("Can't find word type")
+
 
     def get_word_level(self):
         try:
@@ -151,6 +187,7 @@ class Oxford:
             self.word_level = link[-2:]
         except:
             print("Can't find word level")
+
 
     def get_synonyms(self):
         for definition in self.definitions_li:
@@ -165,6 +202,7 @@ class Oxford:
             except:
                 print("There are no synonyms for this definition")
                 self.synonyms.append([])
+
 
     def get_idioms(self):
         # TODO
@@ -183,6 +221,8 @@ class Oxford:
         self.ipa_br = ""
         self.word_type = ""
         self.word_level = ""
+        self.labels = []
+        self.grammar = []
         self.formatted_data = {}  
         self.definitions_li = []
 
@@ -195,6 +235,8 @@ class Oxford:
                 "examples": self.examples[index],
                 "extra_examples": self.extra_examples[index],
                 "synonyms": self.synonyms[index],
+                "labels": self.labels[index],
+                "grammar": self.grammar[index]
             }
         self.formatted_data = {
             "word": self.word,
@@ -212,7 +254,7 @@ if __name__ == "__main__":
     teste = Oxford()
 
     # teste.search("umbrella")
-    teste.search("umbrella")
+    teste.search("last1_1")
     # synonym - palavra deliberately
 
     definitions = teste.definitions
@@ -223,6 +265,8 @@ if __name__ == "__main__":
     # word_level = teste.word_level
     extra_examples = teste.extra_examples
     synonyms = teste.synonyms
+    labels = teste.labels
+    grammar = teste.grammar
     formatted_data = teste.formatted_data
     
 # import itertools

@@ -38,26 +38,37 @@ words_error = []
 
 oxford = Oxford()
 
-# words_tests = ['umbrella',  'dsfsdfds']
+words_tests = ['afternoon']
 
 
-for word in words[:200]:
+
+WORDS_ERRORS_FILENAME = 'words_200_500_errors.txt'
+WORDS_FILENAME = 'words_200_500.txt'
+
+
+for word in words[200:500]:
 # for word in words_tests:    
     print(f'\n-----{word}---------')
+    
+    # Oxford Word Endpoints
+    # _1 , _2, 1_1, 1_2, 1_3, 1_4, 2_1
+    # Examples: word_1, word1_1
+    
+    
 
     try:
         oxford.search(word)
         word_dict = oxford.formatted_data
     except:
         words_error.append(word)      
-        file =  open('words_error.txt', 'a', newline='', encoding='utf-8')
+        file =  open(WORDS_ERRORS_FILENAME, 'a', newline='', encoding='utf-8')
         writer = csv.writer(file)
         writer.writerow([word])
         file.close
         continue
     
     
-    file =  open('words_100.txt', 'a', newline='', encoding='utf-8')
+    file =  open(WORDS_FILENAME, 'a', newline='', encoding='utf-8')
     fieldnames = ['word', 'definitions', 'ipa_nam', 'ipa_br', 'word_type', 'word_level']
     writer = csv.DictWriter(file, fieldnames=fieldnames, delimiter='|')
     writer.writerow(word_dict) 

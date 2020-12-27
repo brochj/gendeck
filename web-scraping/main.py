@@ -54,8 +54,8 @@ oxford = Oxford()
 words_tests = ['afternoon']
 
 
-START = 500
-END = 600
+START = 900
+END = 1000
 
 WORDS_ERRORS_FILENAME = f'words_{START}_{END}-errors.txt'
 WORDS_FILENAME = f'words_{START}_{END}.txt'

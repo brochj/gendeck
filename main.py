@@ -77,13 +77,13 @@ my_model = genanki.Model(
         {"name": "IPA Br"},
         {"name": "English Level"},
         {"name": "Word Type"},
-        {"name": "Word Group"},   
+        {"name": "Word Group"},
         # # {'name': 'Audio_word'},
-        {'name': 'Google_images'},
+        {"name": "Google_images"},
         {"name": "Dict_link"},
         {"name": "Longman_link"},
-        {'name': 'Image'},
-        {'name': 'Tags'},
+        {"name": "Image"},
+        {"name": "Tags"},
     ],
     templates=[
         {
@@ -93,7 +93,6 @@ my_model = genanki.Model(
         },
     ],
     css=".card{font-family: arial;font-size: 20px;text-align: center;color: #000;background-color: #fff}.cloze{font-weight: 700;color: #00f}word{font-weight: 700;color: #00f}level{font-weight: 700;color: #1e90ff}.oxfordButton{background: linear-gradient(to bottom, #3d94f6 5%, #1e62d0 100%);background-color: #3d94f6;border-radius: 6px;border: 1px solid #094793;display: inline-block;cursor: pointer;color: #fff;font-family: Arial;font-size: 15px;font-weight: 700;padding: 6px 24px;text-decoration: none;margin:10px}.oxfordButton:hover{background: linear-gradient(to bottom, #1e62d0 5%, #3d94f6 100%);background-color: #1e62d0}.oxfordButton:active{position: relative;top: 1px}.longmanButton{background:linear-gradient(to bottom, #3d94f6 5%, #314089 100%);background-color:#3d94f6;border-radius:6px;border: 1px solid #094793;display:inline-block;cursor:pointer;color:#ffffff;font-family:Arial;font-size:15px;font-weight:bold;padding:6px 24px;text-decoration:none;margin:10px}.longmanButton:hover{background:linear-gradient(to bottom, #314089 5%, #3d94f6 100%);background-color:#314089}.longmanButton:active{position:relative;top:1px}.googleButton{background:linear-gradient(to bottom, #f9f9f9 5%, #e9e9e9 100%);background-color:#f9f9f9;border-radius:6px;border:1px solid #dcdcdc;display:inline-block;cursor:pointer;color:#666666;font-family:Arial;font-size:15px;font-weight:bold;padding:6px 24px;text-decoration:none;margin:10px}.googleButton:hover{background:linear-gradient(to bottom, #e9e9e9 5%, #f9f9f9 100%);background-color:#e9e9e9}.googleButton:active{position:relative;top:1px}img{max-width:400px;height:auto;border-radius: 20px}wordgroup{font-weight: 700;color: #F1431E}",
-
 )
 
 
@@ -116,27 +115,30 @@ for word_def in words_dict:
                         word["word"], "{{c1::" + word["word"] + "}}"
                     ),
                     word_def["definition"],
-                    word_def['ipa_nam'],
-                    word_def['ipa_br'],
-                    word_def['word_level'].upper(),
-                    word_def['word_type'],
-                    ' '.join(word['group']),
+                    word_def["ipa_nam"],
+                    word_def["ipa_br"],
+                    word_def["word_level"].upper(),
+                    word_def["word_type"],
+                    " ".join(word["group"]),
                     f'http://www.google.com/search?q={word["word"]}&tbm=isch',
                     f'https://www.oxfordlearnersdictionaries.com/us/definition/english/{word["word"]}',
                     f'https://www.ldoceonline.com/dictionary/{word["word"]}',
                     '<img src="Image_2.jpg">',
-                    ' '.join(word["group"] + list(word_def['word_level'].upper().split()) + word_def['word_type'].split()),
-                    
-                    
+                    " ".join(
+                        word["group"]
+                        + list(word_def["word_level"].upper().split())
+                        + word_def["word_type"].split()
+                    ),
                 ],
-                tags=word["group"] + list(word_def['word_level'].upper().split()) + word_def['word_type'].split(),
+                tags=word["group"]
+                + list(word_def["word_level"].upper().split())
+                + word_def["word_type"].split(),
             )
-            
 
             my_deck.add_note(my_note)
-            
+
             my_package = genanki.Package(my_deck)
-            
-            my_package.media_files = ['images/dog/Image_2.jpg']
-            
+
+            my_package.media_files = ["images/dog/Image_2.jpg"]
+
             my_package.write_to_file("output.apkg")

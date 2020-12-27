@@ -36,19 +36,17 @@ words = load_words_list("s1.txt")
 
 query_string = "dog"
 
-filters = '+filterui:imagesize-medium+filterui:photo-photo+filterui:aspect-wide&form=IRFLTR&first=1'
-filters = '+filterui:photo-clipart+filterui:imagesize-medium&form=IRFLTR&first=1&tsc=ImageBasicHover'
+filters = "+filterui:imagesize-medium+filterui:photo-photo+filterui:aspect-wide&form=IRFLTR&first=1"
+filters = "+filterui:photo-clipart+filterui:imagesize-medium&form=IRFLTR&first=1&tsc=ImageBasicHover"
 
 for w in words[:100]:
-    
-    downloader.download(
-            w['word'], 
-            limit=5,  
-            output_dir='images', 
-            adult_filter_off=True, 
-            force_replace=False, 
-            timeout=60, 
-            filters=filters
-        )
-    
 
+    downloader.download(
+        w["word"],
+        limit=5,
+        output_dir="images",
+        adult_filter_off=True,
+        force_replace=False,
+        timeout=60,
+        filters=filters,
+    )

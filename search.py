@@ -84,13 +84,15 @@ class Search:
 
             if len(synsets_list) > 0:
                 # self.found_words.append(word)
-                base_url = 'https://www.oxfordlearnersdictionaries.com/us/definition/english/'
+                base_url = (
+                    "https://www.oxfordlearnersdictionaries.com/us/definition/english/"
+                )
                 self.new_words_list.append(
                     {
                         "word": word,
                         "definition": synsets_list[0].definition(),
                         "ipa": f"/{ipa.convert(word)}/",
-                       "oxford_dict": f"{base_url}{word}",
+                        "oxford_dict": f"{base_url}{word}",
                     }
                 )
                 print(word)

@@ -22,8 +22,11 @@ class Oxford:
         self.ipa_br = ""
         self.word_type = ""
         self.word_level = ""
+        self.variants = []
+        self.use = []
         self.labels = []
         self.grammar = []
+        self.dis_g= []
         self.formatted_data = {}
 
         self.definitions_li = []
@@ -48,7 +51,9 @@ class Oxford:
         self.clear_attributes()
 
         self.get_html()
-
+        
+        
+        self.clear_collocations()
         self.get_definitions_li()
         self.get_definitions()
         self.get_extra_examples()
@@ -58,8 +63,11 @@ class Oxford:
         self.get_word_type()
         self.get_word_level()
         self.get_synonyms()
+        self.get_variants()
+        self.get_use()
         self.get_labels()
         self.get_grammar()
+        self.get_dis_g()
         self.format_data()
 
 
@@ -92,15 +100,25 @@ class Oxford:
             print("Can't find definition")
 
 
-    def get_definition_variants(self):
+    def get_variants(self):
         for definition in self.definitions_li:
             try:
                 variants_text = definition.find("div", class_="variants").text
-                return variants_text
+                self.variants.append(variants_text)
             except:
-                print("Can't find definition variants")
+                # print("Can't find definition variants")
+                self.variants.append([])
+    
+    
+    def get_use(self):
+        for definition in self.definitions_li:
+            try:
+                use_text = definition.find("span", class_="use").text
+                self.use.append(use_text)
+            except:
+                # print("Can't find definition use")
+                self.use.append([])
                 
-
 
     def get_labels(self):
         for definition in self.definitions_li:
@@ -108,7 +126,7 @@ class Oxford:
                 labels = definition.find("span", class_="labels").text
                 self.labels.append(labels)
             except:
-                print("Can't find definition labels")
+                # print("Can't find definition labels")
                 self.labels.append([])
     
     
@@ -118,8 +136,17 @@ class Oxford:
                     grammar = definition.find("span", class_="grammar").text
                     self.grammar.append(grammar)
                 except:
-                    print("Can't find definition grammar")
+                    # print("Can't find definition grammar")
                     self.grammar.append([])
+    
+    def get_dis_g(self):
+            for definition in self.definitions_li:
+                try:
+                    dis_g = definition.find("span", class_="dis-g").text
+                    self.dis_g.append(dis_g)
+                except:
+                    # print("Can't find definition dis_g")
+                    self.dis_g.append([])
 
 
     def clear_extra_examples(self):
@@ -128,16 +155,31 @@ class Oxford:
 
             for extra_eg in extra_examples:
                 extra_eg.clear()
-        except:
+        except AttributeError:
             print("Doesn't exist 'extra examples' or Can't clear 'extra examples'")
         try:
             self.soup.find("span", unbox="more_about").clear()  # more_about removed
-        except:
+        except AttributeError:
             print("Doesn't exist 'more_about' or Can't clear 'more_about'")
         try:
             self.soup.find("span", unbox="cult").clear()  # more_about removed
-        except:
+        except AttributeError:
             print("Doesn't exist 'culture' or Can't clear 'culture'")
+            
+    def clear_collocations(self):
+        '''
+        Limpa "Collocations" para extrair as "labels" de forma correta
+        Pois existem "labels" dentro dessas "Collocations"
+        '''
+        try:
+            collocations = self.soup.find_all("span", unbox="colloc")
+
+            for colloc in collocations:
+                colloc.clear()
+        except AttributeError:
+            print("Doesn't exist 'Collocations'")
+        pass
+        
 
 
     def get_examples(self):
@@ -149,7 +191,7 @@ class Oxford:
                 example_list = [ex.text for ex in examples_ul.find_all("li")]
                 self.examples.append(example_list)
             except:
-                print("There is no examples for this definition")
+                # print("There is no examples for this definition")
                 self.examples.append([])
 
 
@@ -160,9 +202,23 @@ class Oxford:
                 example_list = [ex.text for ex in extra_examples.find_all("li")]
                 self.extra_examples.append(example_list)
             except:
-                print('There is no "Extra Examples" for this definition')
+                # print('There is no "Extra Examples" for this definition')
                 self.extra_examples.append([])
         self.clear_extra_examples()
+    
+    
+    def get_synonyms(self):
+        for definition in self.definitions_li:
+            synonyms_type = "nsyn"  # syn or nsyn
+            synonyms = definition.find("span", xt="nsyn")
+            if synonyms is None:
+                synonyms_type = "syn"
+            try:
+                synonyms = definition.find("span", xt=synonyms_type)
+                synonym_list = [ex.text for ex in synonyms.find_all("a")]
+                self.synonyms.append(synonym_list)
+            except:
+                self.synonyms.append([])
 
 
     def get_ipa(self, phon="nam"):
@@ -189,19 +245,7 @@ class Oxford:
             print("Can't find word level")
 
 
-    def get_synonyms(self):
-        for definition in self.definitions_li:
-            synonyms_type = "nsyn"  # syn or nsyn
-            synonyms = definition.find("span", xt="nsyn")
-            if synonyms is None:
-                synonyms_type = "syn"
-            try:
-                synonyms = definition.find("span", xt=synonyms_type)
-                synonym_list = [ex.text for ex in synonyms.find_all("a")]
-                self.synonyms.append(synonym_list)
-            except:
-                print("There are no synonyms for this definition")
-                self.synonyms.append([])
+    
 
 
     def get_idioms(self):
@@ -221,8 +265,11 @@ class Oxford:
         self.ipa_br = ""
         self.word_type = ""
         self.word_level = ""
+        self.variants = []
+        self.use = []
         self.labels = []
         self.grammar = []
+        self.dis_g = []
         self.formatted_data = {}  
         self.definitions_li = []
 
@@ -236,7 +283,9 @@ class Oxford:
                 "extra_examples": self.extra_examples[index],
                 "synonyms": self.synonyms[index],
                 "labels": self.labels[index],
-                "grammar": self.grammar[index]
+                "grammar": self.grammar[index],
+                "use": self.use[index],
+                "dis_g": self.dis_g[index]
             }
         self.formatted_data = {
             "word": self.word,
@@ -254,7 +303,7 @@ if __name__ == "__main__":
     teste = Oxford()
 
     # teste.search("umbrella")
-    teste.search("last1_1")
+    teste.search("action")
     # synonym - palavra deliberately
 
     definitions = teste.definitions
@@ -267,6 +316,9 @@ if __name__ == "__main__":
     synonyms = teste.synonyms
     labels = teste.labels
     grammar = teste.grammar
+    variants = teste.variants
+    use = teste.use
+    dis_g = teste.dis_g
     formatted_data = teste.formatted_data
     
 # import itertools

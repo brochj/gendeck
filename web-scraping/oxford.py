@@ -267,6 +267,7 @@ class Oxford:
                 "synonyms": self.synonyms[index],
                 "labels": self.labels[index],
                 "grammar": self.grammar[index],
+                "variants": self.variants[index],
                 "use": self.use[index],
                 "dis_g": self.dis_g[index],
             }

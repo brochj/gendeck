@@ -8,9 +8,10 @@ Created on Fri Dec  4 14:40:11 2020
 # http://www.mso.anu.edu.au/~ralph/OPTED/
 
 import genanki
-import ast
+import shelve
+# import ast
 
-# import random
+import random
 
 
 def load_words_list(filename):
@@ -47,21 +48,33 @@ def load_words_dict(filename):
         formatted_word_list.append(
             {
                 "word": word[0],
-                "definition": word[1],
-                "example": word[2],
-                "ipa_nam": word[3],
-                "ipa_br": word[4],
-                "word_type": word[5],
-                "word_level": word[6].strip(),
+                "definitions": word[1],
+                "ipa_nam": word[2],
+                "ipa_br": word[3],
+                "word_type": word[4],
+                "word_level": word[5].strip(), # strip to remove \n
             }
         )
     file.close()
     return formatted_word_list
 
+def read_word_from_shelve(filename):
+    words_list = []
+    shelf = shelve.open(filename)
+    key_list = list(shelf.keys())
+    
+    for key in key_list:
+        word_data = shelf[key]
+        words_list.append(word_data)
+    
+    shelf.close()
+    return words_list
+
 
 words_list = load_words_list("s1.txt")
-words_dict = load_words_dict("words_200.txt")
-
+# words_dict = load_words_dict("word_dict.txt")
+words_dict = read_word_from_shelve("dict/words_0_50.shlf")
+#%%
 # model_id = random.randrange(1 << 30, 1 << 31)
 # deck_id = random.randrange(1 << 30, 1 << 31)
 
@@ -69,13 +82,14 @@ my_model = genanki.Model(
     1962161376,
     "Cloze wordlist",
     fields=[
+        {"name": "English Level"},
         {"name": "Word"},
         {"name": "Example"},
         {"name": "Definition"},
         # # {'name': 'id'},
         {"name": "IPA NAm"},
         {"name": "IPA Br"},
-        {"name": "English Level"},
+        # {"name": "English Level"},
         {"name": "Word Type"},
         {"name": "Word Group"},
         # # {'name': 'Audio_word'},
@@ -96,49 +110,183 @@ my_model = genanki.Model(
 )
 
 
-words = [
-    {"word": "water", "definition": "liquid", "tags": ["tag1", "tag2"]},
-    {"word": "fire", "definition": "hot", "tags": ["tag1", "tag2"]},
-]
+# words = [
+#     {"word": "water", "definition": "liquid", "tags": ["tag1", "tag2"]},
+#     {"word": "fire", "definition": "hot", "tags": ["tag1", "tag2"]},
+# ]
 
 my_deck = genanki.Deck(2106080373, "Longman")
 
-for word_def in words_dict:
-    for word in words_list:
-        if word_def["word"] == word["word"]:
-            print(word)
-            my_note = genanki.Note(
-                model=my_model,
-                fields=[
-                    word["word"],
-                    word_def["example"].replace(
-                        word["word"], "{{c1::" + word["word"] + "}}"
-                    ),
-                    word_def["definition"],
-                    word_def["ipa_nam"],
-                    word_def["ipa_br"],
-                    word_def["word_level"].upper(),
-                    word_def["word_type"],
-                    " ".join(word["group"]),
-                    f'http://www.google.com/search?q={word["word"]}&tbm=isch',
-                    f'https://www.oxfordlearnersdictionaries.com/us/definition/english/{word["word"]}',
-                    f'https://www.ldoceonline.com/dictionary/{word["word"]}',
-                    '<img src="Image_2.jpg">',
-                    " ".join(
-                        word["group"]
-                        + list(word_def["word_level"].upper().split())
-                        + word_def["word_type"].split()
-                    ),
-                ],
-                tags=word["group"]
-                + list(word_def["word_level"].upper().split())
-                + word_def["word_type"].split(),
-            )
 
-            my_deck.add_note(my_note)
+def convert_list_to_html_ul(word_list):
+    '''
+    Parameters
+    ----------
+    word_list : LIST
+    
+        Example: ['a','b','c']
 
-            my_package = genanki.Package(my_deck)
+    Returns
+    -------
+    String:
+        '<ul>
+            <li>a</li>
+            <li>b</li>
+            <li>c</li>
+        </ul>'
 
-            my_package.media_files = ["images/dog/Image_2.jpg"]
+    '''
+    new_list = [f'<li>{item}</li>' for item in word_list]
+    ul = '<ul>' + ''.join(new_list) + '</ul>'
+    return ul
 
-            my_package.write_to_file("output.apkg")
+
+
+def format_definition(def_dict: dict) -> str:
+    """
+    Parameters
+    ----------
+    def_dict : DICT
+        Example: {
+                'definition': str,
+                'examples': list,
+                'extra_examples': list
+                'grammar': str,
+                'labels': list
+                ...
+            }
+
+    Returns
+    -------
+    f'{variants} {grammar} {use} {dis_g} {labels} {definition}' 
+    """
+    #TODO variants = def_dict['variants'] # Tenho que rodar o Cralwer de novo para ter o variants
+    definition = def_dict['definition']
+    grammar = def_dict['grammar']
+    use = ''.join(def_dict['use'])
+    dis_g = ''.join(def_dict['dis_g'])
+    labels = ''.join(def_dict['labels'])    
+    return f'{grammar}{use}{dis_g}{labels} {definition}'  
+
+def random_pick(example_list: list) -> object:
+    if not example_list : return ''
+    return random.choice(example_list)
+
+#%%
+def format_example(word: str, example: str) -> str:
+    word = word.lower()
+    capitalized_word = word.capitalize()
+    example_words = example.split()
+    formatted_example = []
+    
+    for w in example_words:
+        if word in w:
+            formatted_example.append(w.replace(word, "{{c1::" + word + "}}"))
+        elif capitalized_word in w:
+            formatted_example.append(w.replace(capitalized_word, "{{c1::" + capitalized_word + "}}"))
+        else:
+            formatted_example.append(w)
+     
+    return ' '.join(formatted_example)
+
+
+c = format_example('account','She works in Accounts (= the accounts department).')
+print(c)
+#%%
+
+def pick_an_example(word: str, examples: list) -> str:
+    example = random_pick(examples)
+    formatted = format_example(word, example)
+    return formatted
+
+
+
+    
+for i, word_def in enumerate(words_dict[:50]):
+    print('\n',i)
+    
+    for key, definition in word_def['definitions'].items():
+        print('def', key, word_def['word'])
+        for word in words_list:
+            if word_def["word"] == word["word"]:
+                
+                example = pick_an_example(word["word"],definition["examples"]+definition["extra_examples"])
+                
+
+                my_note = genanki.Note(
+                    model=my_model,
+                    fields=[
+                        word_def["word_level"].upper(),
+                        word["word"],
+                        example,
+                        str(key + 1) + '. ' + definition["definition"],
+                        word_def["ipa_nam"],
+                        word_def["ipa_br"],
+                        # word_def["word_level"].upper(),
+                        word_def["word_type"],
+                        " ".join(word["group"]),
+                        f'http://www.google.com/search?q={word["word"]}&tbm=isch',
+                        f'https://www.oxfordlearnersdictionaries.com/us/definition/english/{word["word"]}',
+                        f'https://www.ldoceonline.com/dictionary/{word["word"]}',
+                        '<img src="Image_2.jpg">',
+                        " ".join(
+                            word["group"] +
+                            list(word_def["word_level"].upper().split())
+                            + word_def["word_type"].split()
+                        ),
+                    ],
+                    tags=
+                    word["group"] +
+                    list(word_def["word_level"].upper().split())
+                    + word_def["word_type"].split(),
+                )
+        
+                my_deck.add_note(my_note)
+        
+                my_package = genanki.Package(my_deck)
+        
+                my_package.media_files = ["images/a/a_2.jpg"]
+        
+                my_package.write_to_file("output.apkg")
+
+
+
+# for word_def in words_dict[:5]:
+#     for word in words_list:
+#         if word_def["word"] == word["word"]:
+#             print(word)
+#             my_note = genanki.Note(
+#                 model=my_model,
+#                 fields=[
+#                     word["word"],
+#                     word_def["example"].replace(
+#                         word["word"], "{{c1::" + word["word"] + "}}"
+#                     ),
+#                     word_def["definition"],
+#                     word_def["ipa_nam"],
+#                     word_def["ipa_br"],
+#                     word_def["word_level"].upper(),
+#                     word_def["word_type"],
+#                     " ".join(word["group"]),
+#                     f'http://www.google.com/search?q={word["word"]}&tbm=isch',
+#                     f'https://www.oxfordlearnersdictionaries.com/us/definition/english/{word["word"]}',
+#                     f'https://www.ldoceonline.com/dictionary/{word["word"]}',
+#                     '<img src="Image_2.jpg">',
+#                     " ".join(
+#                         word["group"]
+#                         + list(word_def["word_level"].upper().split())
+#                         + word_def["word_type"].split()
+#                     ),
+#                 ],
+#                 tags=word["group"]
+#                 + list(word_def["word_level"].upper().split())
+#                 + word_def["word_type"].split(),
+#             )
+
+#             my_deck.add_note(my_note)
+
+#             my_package = genanki.Package(my_deck)
+
+#             my_package.media_files = ["images/a/a_2.jpg"]
+
+#             my_package.write_to_file("output.apkg")

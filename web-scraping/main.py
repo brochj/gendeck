@@ -8,6 +8,8 @@ Created on Fri Dec 11 21:08:30 2020
 from oxford import Oxford
 import time
 import csv
+import shelve
+import copy
 
 
 def load_words_list(filename):
@@ -40,12 +42,32 @@ def save_word_to_csv(word_data, filename):
     file.close
     return
 
+def save_word_to_shelve(index, word_data, filename):
+    shelf = shelve.open(filename)
+    shelf[str(index)] = copy.deepcopy(word_data)
+    shelf.close
+    return
+
+def read_word_from_shelve(filename):
+    words_list = []
+    shelf = shelve.open(filename)
+    key_list = list(shelf.keys())
+    
+    for key in key_list:
+        word_data = shelf[key]
+        words_list.append(word_data)
+    
+    shelf.close()
+    return words_list
+    
+
 
 def save_word_not_found(word):
     file = open(WORDS_ERRORS_FILENAME, "a", newline="", encoding="utf-8")
     writer = csv.writer(file)
     writer.writerow([word])
     file.close
+    return
 
 
 word_list, words = load_words_list("s1.txt")
@@ -55,27 +77,29 @@ word_dict = {}
 oxford = Oxford()
 
 words_tests = [
-    "can",
-    "close",
-    "depend",
-    "last",
-    "lead",
-    "live",
-    "minute",
-    "plus",
-    "process",
-    "rid",
-    "ring",
-    "second",
-    "used",
-]
+    "actual",
+    "car"]
+#     "can",
+#     "close",
+#     "depend",
+#     "last",
+#     "lead",
+#     "live",
+#     "minute",
+#     "plus",
+#     "process",
+#     "rid",
+#     "ring",
+#     "second",
+#     "used",
+# ]
 
 
-START = 3
-END = 4
+START = 0
+END = 50
 
 WORDS_ERRORS_FILENAME = f"words_{START}_{END}-errors.txt"
-WORDS_FILENAME = f"words_{START}_{END}.txt"
+WORDS_FILENAME = f"words_{START}_{END}.shlf"
 
 ENDPOINTS = [
     "_1",
@@ -95,8 +119,8 @@ ENDPOINTS = [
     "2_5",
 ]
 
-# for i, word in enumerate(words[START:END]):
-for i, word in enumerate(words_tests):
+for i, word in enumerate(words[START:END]):
+# for i, word in enumerate(words_tests):
     print(f"\n[{i}]-----{word}---------")
 
     ## Simple Search
@@ -109,7 +133,8 @@ for i, word in enumerate(words_tests):
         continue
 
     print("\nSaving Word")
-    save_word_to_csv(word_dict, WORDS_FILENAME)
+    save_word_to_shelve(i, word_dict, WORDS_FILENAME)
+    # save_word_to_csv(word_dict, WORDS_FILENAME)
 
     print("--------------\n")
     time.sleep(10)
@@ -133,46 +158,56 @@ for i, word in enumerate(words_tests):
 
     # print('--------------\n')
     # time.sleep(10)
+    
 
 
-def advanced_search(word):
-    ENDPOINTS = [
-        "_1",
-        "_2",
-        "_3",
-        "_4",
-        "_5",
-        "1_1",
-        "1_2",
-        "1_3",
-        "1_4",
-        "1_5",
-        "2_1",
-        "2_2",
-        "2_3",
-        "2_4",
-        "2_5",
-    ]
 
-    for ep in ENDPOINTS:
-        try:
-            print(f"\nSearching {word} as {word + ep}")
-            # oxford.search(word + ep)
-            # word_dict = oxford.formatted_data
-        except:
-            print(f"\n{word + ep} not found")
-            words_error.append(word)
-            # save_word_not_found(word)
-            time.sleep(5)
-            continue
+shelf = read_word_from_shelve(WORDS_FILENAME)
 
-        save_word_to_csv(word_dict, WORDS_FILENAME)
-        time.sleep(5)
-        print("\nSaving Word: {word + ep}")
 
-    print("\nSaving Word")
-    # save_word_to_csv(word_dict, WORDS_FILENAME)
 
-    print("--------------\n")
-    time.sleep(10)
-    pass
+
+#################################
+
+
+# def advanced_search(word):
+#     ENDPOINTS = [
+#         "_1",
+#         "_2",
+#         "_3",
+#         "_4",
+#         "_5",
+#         "1_1",
+#         "1_2",
+#         "1_3",
+#         "1_4",
+#         "1_5",
+#         "2_1",
+#         "2_2",
+#         "2_3",
+#         "2_4",
+#         "2_5",
+#     ]
+
+#     for ep in ENDPOINTS:
+#         try:
+#             print(f"\nSearching {word} as {word + ep}")
+#             # oxford.search(word + ep)
+#             # word_dict = oxford.formatted_data
+#         except:
+#             print(f"\n{word + ep} not found")
+#             words_error.append(word)
+#             # save_word_not_found(word)
+#             time.sleep(5)
+#             continue
+        
+#         save_word_to_csv(word_dict, WORDS_FILENAME)
+#         time.sleep(5)
+#         print("\nSaving Word: {word + ep}")
+
+#     print("\nSaving Word")
+#     # save_word_to_csv(word_dict, WORDS_FILENAME)
+
+#     print("--------------\n")
+#     time.sleep(10)
+#     pass

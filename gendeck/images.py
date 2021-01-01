@@ -39,7 +39,7 @@ query_string = "dog"
 filters = "+filterui:imagesize-medium+filterui:photo-photo+filterui:aspect-wide&form=IRFLTR&first=1"
 filters = "+filterui:photo-clipart+filterui:imagesize-medium&form=IRFLTR&first=1&tsc=ImageBasicHover"
 
-for w in words[:100]:
+for w in words[:500]:
 
     downloader.download(
         w["word"],

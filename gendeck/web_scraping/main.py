@@ -78,8 +78,13 @@ word_dict = {}
 oxford = Oxford()
 
 words_tests = [
-    "actual",
-    "car"]
+    'difficult',
+    'o-clock',
+    'office',
+    'officer',
+    'ought-to',
+    'traffic',
+]
 #     "can",
 #     "close",
 #     "depend",
@@ -97,7 +102,7 @@ words_tests = [
 
 
 START = 0
-END = 1000
+END = 'add'
 
 WORDS_ERRORS_FILENAME = f"words_{START}_{END}-errors.txt"
 WORDS_FILENAME = f"words_{START}_{END}.shlf"
@@ -120,8 +125,8 @@ ENDPOINTS = [
     "2_5",
 ]
 
-for i, word in enumerate(words):
-# for i, word in enumerate(words_tests):
+# for i, word in enumerate(words):
+for i, word in enumerate(words_tests):
     print(f"\n[{i}]-----{word}---------")
 
     ## Simple Search
@@ -136,13 +141,13 @@ for i, word in enumerate(words):
     print("\nSaving Word")
     print('\nWriting on',i, 'key')
     save_word_to_shelve(i, word_dict, WORDS_FILENAME)
-    # save_word_to_csv(word_dict, WORDS_FILENAME)
 
     print("--------------\n")
     time.sleep(random.randint(8,15))
 
-    ## Advanced Search
-    ## Usar apenas nas palavras que não foram encotradas pelo metodo acima
+    # ----------------------------------------------
+    # Advanced Search
+    # Usar apenas nas palavras que não foram encotradas pelo metodo acima
     # for ep in ENDPOINTS:
     #     try:
     #         print(f'\nSearching {word + ep}')
@@ -150,12 +155,12 @@ for i, word in enumerate(words):
     #         word_dict = oxford.formatted_data
     #     except:
     #         print(f'\n{word + ep} not found')
-    #         time.sleep(5)
+    #         time.sleep(random.randint(5,10))
     #         continue
 
-    #     print('\nSaving Word: {word + ep}')
-    #     save_word_to_csv(word_dict, WORDS_FILENAME)
-    #     time.sleep(5)
+    #     print(f'\nSaving Word: {word + ep}')
+    #     save_word_to_shelve(str(i)+str(ep), word_dict, WORDS_FILENAME)
+    #     time.sleep(random.randint(5,10))
     #     continue
 
     # print('--------------\n')

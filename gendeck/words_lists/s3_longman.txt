@@ -283,7 +283,7 @@ dust,n,S3,W3
 DVD,n,S3,W3
 educational,adj,S3,W2
 effectively,adv,S3,W2
-effcient,adj,S3,W3
+efficient,adj,S3,W3
 elderly,adj,S3,W2
 elect,v,S3,W3
 electrical,adj,S3
@@ -625,8 +625,8 @@ occupation,n,S3,W3
 ocean,n,S3,W2
 odds,n,S3
 offence,n,S3,W2
-offcial,n,S3,W1
-offcial,adj,S3,W2
+official,n,S3,W1
+official,adj,S3,W2
 one,another,pron,S3,W3
 onion,n,S3
 opening,n,S3
@@ -651,7 +651,7 @@ patience,n,S3
 peaceful,adj,S3
 pepper,n,S3
 per,prep,S3,W1
-percent,n,S3,W2
+per-cent,n,S3,W2
 perform,v,S3,W2
 personality,n,S3,W3
 persuade,v,S3,W2
@@ -676,7 +676,7 @@ polite,adj,S3
 pond,n,S3
 pop,n,S3,W3
 post,v,S3
-post,offce,n,S3
+post-office,n,S3
 poster,n,S3
 potential,adj,S3,W2
 powerful,adj,S3,W2

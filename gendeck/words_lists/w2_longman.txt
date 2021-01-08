@@ -574,7 +574,7 @@ occasion,n,S1,W2
 occupy,v,W2
 ocean,n,S3,W2
 offence,n,S3,W2
-offcial,adj,S3,W2
+official,adj,S3,W2
 onto,prep,S1,W2
 operate,v,S2,W2
 opinion,n,S1,W2
@@ -610,7 +610,7 @@ path,n,S2,W2
 pay,n,S1,W2
 peace,n,S2,W2
 pension,n,S2,W2
-percent,n,S3,W2
+per-cent,n,S3,W2
 perfect,adj,S2,W2
 perform,v,S3,W2
 permanent,adj,S2,W2
@@ -852,7 +852,7 @@ study,v,S2,W2
 subsequent,adj,W2
 substantial,adj,S3,W2
 succeed,v,S3,W2
-suffcient,adj,S2,W2
+sufficient,adj,S2,W2
 suggestion,n,S1,W2
 suitable,adj,S3,W2
 sum,n,S2,W2
@@ -907,7 +907,7 @@ tour,n,S3,W2
 track,n,S2,W2
 trade,v,S3,W2
 tradition,n,S2,W2
-traffc,n,S1,W2
+traffic,n,S1,W2
 train,n,S1,W2
 train,v,S1,W2
 transfer,v,S3,W2
@@ -935,7 +935,7 @@ unlikely,adj,S3,W2
 upper,adj,W2
 urban,adj,W2
 used,adj,S1,W2
-used,to,modal,S1,W2
+used-to,modal,S1,W2
 usual,adj,S2,W2
 variation,n,W2
 vary,v,S3,W2

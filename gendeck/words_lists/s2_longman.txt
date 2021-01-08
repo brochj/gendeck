@@ -6,7 +6,7 @@ abuse,n,S2,W3
 access,n,S2,W1
 accident,n,S2,W2
 accommodation,n,S2,W2
-according,to,prep,S2,W1
+according-to,prep,S2,W1
 accurate,adj,S2,W3
 achieve,v,S2,W1
 act,v,S2,W1
@@ -165,7 +165,7 @@ carpet,n,S2,W3
 cash,n,S2,W2
 category,n,S2,W2
 cause,n,S2,W1
-cellphone,n,S2,W3
+cell-phone,n,S2,W3
 century,n,S2,W1
 challenge,n,S2,W2
 chap,n,S2
@@ -263,7 +263,7 @@ desk,n,S2,W2
 destroy,v,S2,W2
 detail,n,S2,W1
 develop,v,S2,W1
-diffculty,n,S2,W1
+difficulty,n,S2,W1
 dig,v,S2
 direct,adj,S2,W1
 directly,adv,S2,W2
@@ -858,7 +858,7 @@ style,n,S2,W1
 subject,n,S2,W1
 successful,adj,S2,W1
 sudden,adj,S2,W3
-suffcient,adj,S2,W2
+sufficient,adj,S2,W2
 sugar,n,S2,W3
 suit,n,S2,W3
 sum,n,S2,W2

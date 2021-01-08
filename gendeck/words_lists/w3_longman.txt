@@ -129,7 +129,7 @@ CD,n,S3,W3
 cease,v,W3
 ceiling,n,S3,W3
 celebrate,v,W3
-cellphone,n,S2,W3
+cell-phone,n,S2,W3
 centimetre,n,S3,W3
 certificate,n,S3,W3
 challenge,v,S3,W3
@@ -288,8 +288,8 @@ DVD,n,S3,W3
 ease,v,W3
 economics,n,W3
 edition,n,W3
-effciency,n,W3
-effcient,adj,S3,W3
+efficiency,n,W3
+efficient,adj,S3,W3
 elect,v,S3,W3
 electric,adj,S2,W3
 electricity,n,S2,W3
@@ -604,7 +604,7 @@ observation,n,W3
 occasional,adj,S3,W3
 occasionally,adv,S2,W3
 occupation,n,S3,W3
-b"oclock,adv,S1,W3"
+o-clock,adv,S1,W3
 odd,adj,S1,W3
 one,another,pron,S3,W3
 operator,n,W3
@@ -723,7 +723,7 @@ purchase,n,W3
 purchase,v,W3
 pure,adj,S3,W3
 purely,adv,S3,W3
-quali\x98cation,n,W3
+qualification,n,W3
 qualify,v,S3,W3
 question,v,S2,W3
 quietly,adv,S3,W3

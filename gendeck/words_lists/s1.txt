@@ -225,7 +225,7 @@ development,n,S1,W1
 die,v,S1,W1
 difference,n,S1,W1
 different,adj,S1,W1
-diffcult,adj,S1,W1
+difficult,adj,S1,W1
 dinner,n,S1,W2
 direction,n,S1,W1
 do,auxiliary,S1,W1
@@ -576,14 +576,14 @@ number,n,S1,W1
 obviously,adv,S1,W2
 occasion,n,S1,W2
 occur,v,S1,W1
-b"oclock,adv,S1,W3"
+o-clock,adv,S1,W3
 odd,adj,S1,W3
 of,prep,S1,W1
 of,course,adv,S1,W1
 off,adv,prep,adj,S1,W1
 offer,v,S1,W1
-offce,n,S1,W1
-offcer,n,S1,W1
+office,n,S1,W1
+officer,n,S1,W1
 often,adv,S1,W1
 OK,adj,adv,S1
 OK,interjection,S1
@@ -611,7 +611,7 @@ organize,v,S1,W2
 original,adj,S1,W1
 other,determiner,adj,pron,S1,W1
 otherwise,adv,S1,W2
-ought,to,modal,S1,W1
+ought-to,modal,S1,W1
 our,determiner,S1,W1
 ours,pron,S1
 ourselves,pron,S1,W3
@@ -905,7 +905,7 @@ total,adj,S1,W1
 totally,adv,S1,W2
 towards,prep,S1,W1
 town,n,S1,W1
-traffc,n,S1,W2
+traffic,n,S1,W2
 train,n,S1,W2
 train,v,S1,W2
 tree,n,S1,W1

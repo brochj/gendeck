@@ -11,17 +11,10 @@ import csv
 import shelve
 import copy
 import random
+import logging
 
-
-def find_duplicates(lst: list):
-    seen = set()
-    duplicates = []
-    for item in lst:
-        if item not in seen:
-            seen.add(item)
-        else:
-            duplicates.append(item)
-    return duplicates
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 def load_words_list(filename):
@@ -92,10 +85,25 @@ def random_sleep(start=5, stop=10):
     return time.sleep(random.randint(start, stop))
 
 
+def find_duplicates(lst: list) -> list:
+    seen = set()
+    duplicates = []
+    for item in lst:
+        if item not in seen:
+            seen.add(item)
+        else:
+            duplicates.append(item)
+    return duplicates
+
+
 LIST_FILENAME = 's1_longman'
 
 word_list, words, words_type = load_words_list(f"{LIST_FILENAME}.txt")
-#%%
+duplicated_words = sorted(list(set(find_duplicates(words))))
+words = list(set(words))
+
+
+# %%
 words_error = []
 word_dict = {}
 
@@ -140,7 +148,9 @@ ENDPOINTS = [
 
 for i, word in enumerate(words):
     # for i, word in enumerate(words_tests):
-    print(f"\n[{i}]-----{word}---------")
+    logging.info("-" * 40)
+    logging.info("[{i}]----{word}".center(40))
+    logging.info("-" * 40)
 
     # Simple Search
     try:

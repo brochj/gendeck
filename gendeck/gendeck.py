@@ -72,7 +72,7 @@ def read_word_from_shelve(filename):
 
 words_list = load_words_list("s1.txt")
 # words_dict = load_words_dict("word_dict.txt")
-words_dict = read_word_from_shelve("dict/words_0_errors.shlf")
+words_dict = read_word_from_shelve("dict/s1_longman.shlf")
 #%%
 # model_id = random.randrange(1 << 30, 1 << 31)
 # deck_id = random.randrange(1 << 30, 1 << 31)

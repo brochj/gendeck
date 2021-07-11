@@ -31,6 +31,15 @@ class SqliteORM:
         cursor = self.connection.cursor()
         cursor.execute(table)
 
+    def query_all_from_table(self, table: str, *columns: str) -> list:
+        cursor = self.connection.cursor()
+        cols = ", ".join(columns) or "*"
+        cursor.execute(f"SELECT {cols.lower()} FROM {table.lower()}")
+        return cursor.fetchall()
+
+    def insert_into(self, table: str, **values):
+        pass
+
     def insert_word(self, values: dict) -> int:
         cursor = self.connection.cursor()
         word = values.get("word")
@@ -127,3 +136,52 @@ class SqliteORM:
             f'SELECT rowid, * FROM definitions WHERE definition = "{definition}"'
         )
         return cursor.fetchone()
+
+    def query_examples_by_word_id(self, word_id: int) -> list:
+        cursor = self.connection.cursor()
+        cursor.execute(
+            f"""
+            SELECT 
+                words.id AS word_id,
+                definitions.id AS def_id,
+                examples.id AS ex_id,
+
+                words.word,
+                words.cefr,
+                words.speaking,
+                words.writing,
+                words.word_type,
+                words.ipa_nam,
+                words.ipa_br,
+                
+                definitions.definition,
+                definitions.cefr AS def_cefr,
+                definitions.grammar,
+                definitions.def_type,
+                definitions.context AS def_context,
+                definitions.labels AS def_labels,
+                definitions.variants,
+                definitions.use,
+                definitions.synonyms,
+                
+                examples.example,
+                examples.context AS ex_context,
+                examples.labels AS ex_labels
+                
+            FROM examples
+            INNER JOIN words ON examples.word_id = words.id
+            INNER JOIN definitions ON examples.definition_id = definitions.id
+            WHERE examples.word_id = '{word_id}'
+            """
+        )
+        return cursor.fetchall()
+
+
+if __name__ == "__main__":
+    sqlite = SqliteORM("longman_levels.db")
+    sqlite.connect()
+
+    # print(sqlite.query_all_from_table("words", "id", "speaking", "word"))
+    print(sqlite.query_examples_by_word_id(3190))
+
+    sqlite.close()

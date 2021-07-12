@@ -52,9 +52,9 @@ class ExampleFormatter:
         formatted_sentence = []
 
         for w in example_words:
-            if word == w:
+            if word in w:
                 formatted_sentence.append(self.add_cloze_command(w, word))
-            elif capitalized_word == w:
+            elif capitalized_word in w:
                 formatted_sentence.append(self.add_cloze_command(w, capitalized_word))
             else:
                 formatted_sentence.append(w)

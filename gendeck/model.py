@@ -71,7 +71,6 @@ my_model = genanki.Model(
                 <labels>{{Definition Variants}} </labels>
                 <use>{{Definition Use}} </use>  
                 <br/>
-                <br/>
                 <p class="text-level"><b>Oxford Level:</b> <level>{{CEFR}}</level></p>
                 <p class="text-level">Speaking: <wordgroup>{{Speaking}}</wordgroup> |
                 Writing: <wordgroup>{{Writing}}</wordgroup></p>

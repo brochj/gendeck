@@ -13,38 +13,11 @@ import genanki
 from sqlite3_orm import SqliteORM
 from data_formatter import DefinitionFormatter, ExampleFormatter, WordFormatter
 from model import my_model
+from fields import create_fields
 
 
 def generate_id() -> int:
     return random.randrange(1 << 30, 1 << 31)
-
-
-def format_definition(def_dict: dict) -> str:
-    """
-    Parameters
-    ----------
-    def_dict : DICT
-        example: {
-                'definition': str,
-                'examples': list,
-                'extra_examples': list
-                'grammar': str,
-                'labels': list
-                ...
-            }
-
-    Returns
-    -------
-    f'{variants} {grammar} {use} {dis_g} {labels} {definition}'
-    """
-    variants = "".join(def_dict["variants"])
-    definition = def_dict["definition"]
-    grammar = "".join(def_dict["grammar"])
-    use = "".join(def_dict["use"])
-    dis_g = "".join(def_dict["dis_g"])
-    labels = "".join(def_dict["labels"])
-    def_word_level = "".join(def_dict["def_word_level"])
-    return f"{def_word_level.upper()} {grammar} {use}{dis_g}{variants}{labels} {definition}"
 
 
 def random_pick(example_list: list) -> object:
@@ -79,44 +52,7 @@ for word_tuple in words[:3]:
 
             my_note = genanki.Note(
                 model=my_model,
-                fields=[
-                    example["id"],
-                    #
-                    word["word"],
-                    word["cefr"],
-                    word["speaking"],
-                    word["writing"],
-                    word["word_type"],
-                    word["ipa_nam"],
-                    word["ipa_br"],
-                    #
-                    definition["definition"],
-                    definition["cefr"],
-                    definition["grammar"],
-                    definition["def_type"],
-                    definition["context"],
-                    definition["labels"],
-                    definition["variants"],
-                    definition["use"],
-                    definition["synonyms"],
-                    #
-                    example["example"],
-                    example["context"],
-                    example["labels"],
-                    # convert_list_to_html_ul(definition["examples"]),
-                    f"http://www.google.com/search?q={word['word']}&tbm=isch",
-                    f"https://www.oxfordlearnersdictionaries.com/us/definition/english/{word['word']}",
-                    f"https://www.ldoceonline.com/dictionary/{word['word']}",
-                    '<img src="Image_2.jpg">',
-                    " ".join(
-                        [
-                            word["cefr"],
-                            word["speaking"],
-                            word["writing"],
-                            word["word_type"],
-                        ]
-                    ),
-                ],
+                fields=create_fields(word, definition, example),
                 tags=[
                     word["cefr"],
                     word["speaking"],

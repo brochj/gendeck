@@ -1,13 +1,14 @@
 import genanki
 
-MODEL = genanki.Model(
+my_model = genanki.Model(
     1962161376,
     "Cloze wordlist",
     fields=[
+        {"name": "Example Id"},
+        {"name": "Word"},
         {"name": "CEFR"},
         {"name": "Speaking"},
         {"name": "Writing"},
-        {"name": "Word"},
         {"name": "Word Type"},
         {"name": "IPA NAm"},
         {"name": "IPA Br"},
@@ -35,8 +36,37 @@ MODEL = genanki.Model(
     templates=[
         {
             "name": "Card",
-            "qfmt": "{{cloze::Example}}<br/><br/><b>Def:</b> {{Definition}}<br/><br/>{{Image}}",
-            "afmt": '{{cloze::Example}}<br/><br/><b>Def:</b> {{Definition}}<br/><br/>{{Image}}<hr id="answer"><word>{{Word}}</word> <sub><i>{{Word Type}}</i></sub><br/><b>{{IPA NAm}}</b><br/><br/>Oxford Level: <level>{{English Level}}</level><br/>Longman Group: <wordgroup>{{Word Group}}</wordgroup><br/><br/><a href="{{Dict_link}}" class="oxfordButton">Oxford Dictionary</a><a href="{{Longman_link}}" class="longmanButton">Longman Dictionary</a><a href="{{Google_images}}" class="googleButton">Google Images</a>',
+            "qfmt": """
+                    {{cloze::Example}}
+                    <br/>
+                    <br/>
+                    <b>Def:</b> 
+                    {{Definition}}
+                    <br/>
+                    <br/>
+                    {{Image}}
+                    """,
+            "afmt": """
+                    {{cloze::Example}}
+                    <br/><br/>
+                    <b>Def:</b>
+                    {{Definition}}
+                    <br/><br/>
+                    {{Image}}
+                    <hr id="answer">
+                    <word>{{Word}}</word> <sub><i>{{Word Type}}</i></sub>
+                    <br/>
+                    <b>{{IPA NAm}}</b>
+                    <br/><br/>
+                    Oxford Level: <level>{{CEFR}}</level>
+                    <br/>
+                    Speaking: <wordgroup>{{Speaking}}</wordgroup>
+                    Writing: <wordgroup>{{Writing}}</wordgroup>
+                    <br/><br/>
+                    <a href="{{Dict_link}}" class="oxfordButton">Oxford Dictionary</a>
+                    <a href="{{Longman_link}}" class="longmanButton">Longman Dictionary</a>
+                    <a href="{{Google_images}}" class="googleButton">Google Images</a>
+                    """,
         },
     ],
     css="""

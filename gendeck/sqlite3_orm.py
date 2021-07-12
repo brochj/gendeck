@@ -137,6 +137,30 @@ class SqliteORM:
         )
         return cursor.fetchone()
 
+    def query_definitions_by_word_id(self, word_id: int) -> list:
+        cursor = self.connection.cursor()
+        cursor.execute(
+            f"""
+            SELECT 
+                *                
+            FROM definitions
+            WHERE definitions.word_id = '{word_id}'
+            """
+        )
+        return cursor.fetchall()
+
+    def query_examples_by_definition_id(self, definition_id: int) -> list:
+        cursor = self.connection.cursor()
+        cursor.execute(
+            f"""
+            SELECT 
+                *
+            FROM examples
+            WHERE examples.definition_id = '{definition_id}'
+            """
+        )
+        return cursor.fetchall()
+
     def query_examples_by_word_id(self, word_id: int) -> list:
         cursor = self.connection.cursor()
         cursor.execute(

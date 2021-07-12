@@ -6,12 +6,15 @@ Created on Fri Dec  4 14:40:11 2020
 """
 # Dicionario
 # http://www.mso.anu.edu.au/~ralph/OPTED/
+import sys
 
 import genanki
 import shelve
 
 import random
-from gendeck.model import MODEL
+from model import my_model
+
+from sqlite3_orm import SqliteORM
 
 
 def generate_id() -> int:
@@ -102,55 +105,136 @@ def pick_an_example(word: str, examples: list) -> str:
     return formatted
 
 
-my_deck = genanki.Deck(2106080373, "Longman")
+def generate_note(data):
+    pass
 
-for i, word_def in enumerate(words_dict[:10]):
-    print("\n", i)
 
-    for key, definition in word_def["definitions"].items():
-        print("def", key, word_def["word"])
-        for word in words_list:
-            if word_def["word"] == word["word"]:
+my_deck = genanki.Deck(generate_id(), "Longman")
+sqlite = SqliteORM("longman_levels.db")
+sqlite.connect()
 
-                example = pick_an_example(
-                    word["word"], definition["examples"] + definition["extra_examples"]
-                )
+words = sqlite.query_all_from_table("words")
 
-                formatted_def = str(key + 1) + ". " + format_definition(definition)
 
-                my_note = genanki.Note(
-                    model=my_model,
-                    fields=[
-                        word_def["word_level"].upper(),
-                        word["word"],
-                        example,
-                        formatted_def,
-                        word_def["ipa_nam"],
-                        word_def["ipa_br"],
-                        # word_def["word_level"].upper(),
-                        word_def["word_type"],
-                        " ".join(word["group"]),
-                        convert_list_to_html_ul(definition["examples"]),
-                        convert_list_to_html_ul(definition["extra_examples"]),
-                        f'http://www.google.com/search?q={word["word"]}&tbm=isch',
-                        f'https://www.oxfordlearnersdictionaries.com/us/definition/english/{word["word"]}',
-                        f'https://www.ldoceonline.com/dictionary/{word["word"]}',
-                        '<img src="Image_2.jpg">',
-                        " ".join(
-                            word["group"]
-                            + list(word_def["word_level"].upper().split())
-                            + word_def["word_type"].split()
-                        ),
-                    ],
-                    tags=word["group"]
-                    + list(word_def["word_level"].upper().split())
-                    + word_def["word_type"].split(),
-                )
+for word_tuple in words[:3]:
+    word_id = word_tuple[0]
+    word = word_tuple[1]
 
-                my_deck.add_note(my_note)
+    definitions = sqlite.query_definitions_by_word_id(word_id)
 
-                my_package = genanki.Package(my_deck)
+    for def_tuple in definitions:
+        definition_id = def_tuple[0]
 
-                my_package.media_files = ["images/a/a_2.jpg"]
+        examples = sqlite.query_examples_by_definition_id(definition_id)
 
-                my_package.write_to_file("output.apkg")
+        for example_tuple in examples:
+            example_id = example_tuple[0]
+
+            my_note = genanki.Note(
+                model=my_model,
+                fields=[
+                    str(example_id),
+                    #
+                    word_tuple[1],
+                    word_tuple[2].upper(),
+                    word_tuple[3],
+                    word_tuple[4],
+                    word_tuple[5],
+                    word_tuple[6],
+                    word_tuple[7],
+                    #
+                    def_tuple[1],
+                    def_tuple[2].upper(),
+                    def_tuple[3],
+                    def_tuple[4],
+                    def_tuple[5],
+                    def_tuple[6],
+                    def_tuple[7],
+                    def_tuple[8],
+                    def_tuple[9],
+                    #
+                    example_tuple[1],
+                    example_tuple[2],
+                    example_tuple[3],
+                    # convert_list_to_html_ul(definition["examples"]),
+                    f"http://www.google.com/search?q={word}&tbm=isch",
+                    f"https://www.oxfordlearnersdictionaries.com/us/definition/english/{word}",
+                    f"https://www.ldoceonline.com/dictionary/{word}",
+                    '<img src="Image_2.jpg">',
+                    " ".join(
+                        [
+                            word_tuple[2].upper(),
+                            word_tuple[3],
+                            word_tuple[4],
+                            word_tuple[5],
+                        ]
+                    ),
+                ],
+                tags=[
+                    word_tuple[2].upper(),
+                    word_tuple[3],
+                    word_tuple[4],
+                    word_tuple[5].replace(" ", "-"),
+                ],
+            )
+
+            my_deck.add_note(my_note)
+
+            my_package = genanki.Package(my_deck)
+
+            my_package.media_files = ["images/a/a_2.jpg"]
+
+            my_package.write_to_file("output.apkg")
+
+
+sqlite.close()
+# for i, word_def in enumerate(words_dict[:10]):
+#     print("\n", i)
+
+#     for key, definition in word_def["definitions"].items():
+#         print("def", key, word_def["word"])
+#         for word in words_list:
+#             if word_def["word"] == word["word"]:
+
+#                 example = pick_an_example(
+#                     word["word"], definition["examples"] + definition["extra_examples"]
+#                 )
+
+#                 formatted_def = str(key + 1) + ". " + format_definition(definition)
+
+#                 my_note = genanki.Note(
+#                     model=my_model,
+#                     fields=[
+#                         word_def["word_level"].upper(),
+#                         word["word"],
+#                         example,
+#                         formatted_def,
+#                         word_def["ipa_nam"],
+#                         word_def["ipa_br"],
+#                         # word_def["word_level"].upper(),
+#                         word_def["word_type"],
+#                         " ".join(word["group"]),
+#                         convert_list_to_html_ul(definition["examples"]),
+#                         convert_list_to_html_ul(definition["extra_examples"]),
+#                         f'http://www.google.com/search?q={word["word"]}&tbm=isch',
+#                         f'https://www.oxfordlearnersdictionaries.com/us/definition/english/{word["word"]}',
+#                         f'https://www.ldoceonline.com/dictionary/{word["word"]}',
+#                         '<img src="Image_2.jpg">',
+#                         " ".join(
+#                             word["group"]
+#                             + list(word_def["word_level"].upper().split())
+#                             + word_def["word_type"].split()
+#                         ),
+#                     ],
+#                     tags=word["group"]
+#                     + list(word_def["word_level"].upper().split())
+#                     + word_def["word_type"].split(),
+#                 )
+
+#                 my_deck.add_note(my_note)
+
+#                 my_package = genanki.Package(my_deck)
+
+#                 my_package.media_files = ["images/a/a_2.jpg"]
+
+#                 my_package.write_to_file("output.apkg")

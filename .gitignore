@@ -1,6 +1,7 @@
 *.db
 
 gendeck/*.apkg
+gendeck/decks/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

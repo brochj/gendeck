@@ -1,11 +1,13 @@
 def create_tags(word: dict) -> str:
     return " ".join(
-        [
-            word["cefr"],
-            word["speaking"],
-            word["writing"],
-            word["word_type"],
-        ]
+        list(
+            [
+                word["cefr"],
+                word["speaking"],
+                word["writing"],
+                word["word_type"],
+            ]
+        )
     )
 
 

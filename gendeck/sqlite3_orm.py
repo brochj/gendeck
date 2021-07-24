@@ -3,6 +3,18 @@ from sqlite3 import Connection, Cursor
 from typing import Type
 
 
+class SQLite:
+    def __init__(self, db_name: str):
+        self.file = db_name
+
+    def __enter__(self):
+        self.conn = sqlite3.connect(self.file)
+        return self.conn.cursor()
+
+    def __exit__(self, type, value, traceback):
+        self.conn.close()
+
+
 class SqliteORM:
     def __init__(self, db_name):
         self.db_name: str = db_name
@@ -32,10 +44,10 @@ class SqliteORM:
         cursor.execute(table)
 
     def query_all_from_table(self, table: str, *columns: str) -> list:
-        cursor = self.connection.cursor()
-        cols = ", ".join(columns) or "*"
-        cursor.execute(f"SELECT {cols.lower()} FROM {table.lower()}")
-        return cursor.fetchall()
+        with SQLite(self.db_name) as cursor:
+            cols = ", ".join(columns) or "*"
+            cursor.execute(f"SELECT {cols.lower()} FROM {table.lower()}")
+            return cursor.fetchall()
 
     def insert_into(self, table: str, **values):
         pass
@@ -124,88 +136,112 @@ class SqliteORM:
         return cursor.lastrowid
 
     def query_word(self, word: str, word_type: str) -> tuple:
-        cursor = self.connection.cursor()
-        cursor.execute(
-            f"SELECT rowid, * FROM words WHERE word = '{word}' AND word_type = '{word_type}'"
-        )
-        return cursor.fetchone()
+        with SQLite(self.db_name) as cursor:
+            cursor.execute(
+                f"SELECT rowid, * FROM words WHERE word = '{word}' AND word_type = '{word_type}'"
+            )
+            return cursor.fetchone()
+
+    def query_all_from_table_and_filter(
+        self, table: str, *columns: str, **filters: str
+    ) -> list:
+        filter_str = "WHERE "
+        if len(filters) == 1:
+            for key, value in filters.items():
+                filter_str += f"{key} = '{value}'"
+        elif len(filters) > 1:
+            for key, value in filters.items():
+                filter_str += f"{key} = '{value}'"
+                filter_str += " AND "
+            filter_str = filter_str[:-5]
+        with SQLite(self.db_name) as cursor:
+            cols = ", ".join(columns) or "*"
+            cursor.execute(f"SELECT {cols.lower()} FROM {table.lower()} {filter_str}")
+            return cursor.fetchall()
 
     def query_definition(self, definition: str) -> tuple:
-        cursor = self.connection.cursor()
-        cursor.execute(
-            f'SELECT rowid, * FROM definitions WHERE definition = "{definition}"'
-        )
-        return cursor.fetchone()
+        with SQLite(self.db_name) as cursor:
+            cursor.execute(
+                f'SELECT rowid, * FROM definitions WHERE definition = "{definition}"'
+            )
+            return cursor.fetchone()
 
     def query_definitions_by_word_id(self, word_id: int) -> list:
-        cursor = self.connection.cursor()
-        cursor.execute(
-            f"""
-            SELECT 
-                *                
-            FROM definitions
-            WHERE definitions.word_id = '{word_id}'
-            """
-        )
-        return cursor.fetchall()
+        with SQLite(self.db_name) as cursor:
+            cursor.execute(
+                f"""
+                SELECT 
+                    *                
+                FROM definitions
+                WHERE definitions.word_id = '{word_id}'
+                """
+            )
+            return cursor.fetchall()
 
     def query_examples_by_definition_id(self, definition_id: int) -> list:
-        cursor = self.connection.cursor()
-        cursor.execute(
-            f"""
-            SELECT 
-                *
-            FROM examples
-            WHERE examples.definition_id = '{definition_id}'
-            """
-        )
-        return cursor.fetchall()
+        with SQLite(self.db_name) as cursor:
+            cursor.execute(
+                f"""
+                SELECT 
+                    *
+                FROM examples
+                WHERE examples.definition_id = '{definition_id}'
+                """
+            )
+            return cursor.fetchall()
 
     def query_examples_by_word_id(self, word_id: int) -> list:
-        cursor = self.connection.cursor()
-        cursor.execute(
-            f"""
-            SELECT 
-                words.id AS word_id,
-                definitions.id AS def_id,
-                examples.id AS ex_id,
+        with SQLite(self.db_name) as cursor:
+            cursor.execute(
+                f"""
+                SELECT 
+                    words.id AS word_id,
+                    definitions.id AS def_id,
+                    examples.id AS ex_id,
 
-                words.word,
-                words.cefr,
-                words.speaking,
-                words.writing,
-                words.word_type,
-                words.ipa_nam,
-                words.ipa_br,
-                
-                definitions.definition,
-                definitions.cefr AS def_cefr,
-                definitions.grammar,
-                definitions.def_type,
-                definitions.context AS def_context,
-                definitions.labels AS def_labels,
-                definitions.variants,
-                definitions.use,
-                definitions.synonyms,
-                
-                examples.example,
-                examples.context AS ex_context,
-                examples.labels AS ex_labels
-                
-            FROM examples
-            INNER JOIN words ON examples.word_id = words.id
-            INNER JOIN definitions ON examples.definition_id = definitions.id
-            WHERE examples.word_id = '{word_id}'
-            """
-        )
-        return cursor.fetchall()
+                    words.word,
+                    words.cefr,
+                    words.speaking,
+                    words.writing,
+                    words.word_type,
+                    words.ipa_nam,
+                    words.ipa_br,
+                    
+                    definitions.definition,
+                    definitions.cefr AS def_cefr,
+                    definitions.grammar,
+                    definitions.def_type,
+                    definitions.context AS def_context,
+                    definitions.labels AS def_labels,
+                    definitions.variants,
+                    definitions.use,
+                    definitions.synonyms,
+                    
+                    examples.example,
+                    examples.context AS ex_context,
+                    examples.labels AS ex_labels
+                    
+                FROM examples
+                INNER JOIN words ON examples.word_id = words.id
+                INNER JOIN definitions ON examples.definition_id = definitions.id
+                WHERE examples.word_id = '{word_id}'
+                """
+            )
+            return cursor.fetchall()
 
 
 if __name__ == "__main__":
     sqlite = SqliteORM("longman_levels.db")
-    sqlite.connect()
+    # sqlite.connect()
 
     # print(sqlite.query_all_from_table("words", "id", "speaking", "word"))
-    print(sqlite.query_examples_by_word_id(3190))
+    words = sqlite.query_all_from_table_and_filter(
+        "words", "word", cefr="a1", speaking="S1"
+    )
+    words = sqlite.query_all_from_table_and_filter("words", word="car", speaking="S1")
+    print(words)
+    print(len(words))
+    word = sqlite.query_word("car", "noun")
+    print(word)
 
-    sqlite.close()
+    # sqlite.close()

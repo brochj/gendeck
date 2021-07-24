@@ -6,12 +6,12 @@ class WordFormatter:
         return {
             "id": self.item[0],
             "word": self.item[1],
-            "cefr": self.item[2].upper(),
-            "speaking": self.item[3],
-            "writing": self.item[4],
+            "cefr": "" if self.item[2] is None else self.item[2].upper(),
+            "speaking": "" if self.item[3] is None else self.item[3],
+            "writing": "" if self.item[4] is None else self.item[4],
             "word_type": self.item[5],
-            "ipa_nam": self.item[6],
-            "ipa_br": self.item[7],
+            "ipa_nam": "" if self.item[6] is None else self.item[6],
+            "ipa_br": "" if self.item[7] is None else self.item[7],
         }
 
 
@@ -23,7 +23,7 @@ class DefinitionFormatter:
         return {
             "id": self.item[0],
             "definition": self.item[1],
-            "cefr": self.item[2].upper(),
+            "cefr": "" if self.item[2] is None else self.item[2].upper(),
             "grammar": self.item[3],
             "def_type": self.item[4],
             "context": self.item[5],

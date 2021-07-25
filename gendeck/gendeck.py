@@ -75,6 +75,3 @@ for index, word_tuple in enumerate(words):
             my_package.media_files = ["images/a/a_2.jpg"]
 
             my_package.write_to_file(f"{OUTPUT_NAME}.apkg")
-
-
-# sqlite.close()
